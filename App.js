@@ -120,7 +120,7 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text>Bananagrams!!</Text>
+      <Text style={styles.notes}>Bananagrams!!</Text>
       <View>
         {getRows(letterGrid, handleCellClick, setSelectedCell)}
       </View>
