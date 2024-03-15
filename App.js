@@ -18,41 +18,41 @@ const Block = ({letter}) => (
   </View>
 )
 
-const GuessRow = ({ guess }) => {
-  const letters = guess.split("")
+const getCellLetter = (rowNum, colNum, letterGrid) => {
+  if(letterGrid[rowNum] != null) {
+    if (letterGrid[rowNum][colNum] != null) {
+      return letterGrid[rowNum][colNum]
+    }
+  }
+  return ""
+}
 
+const Row = ({ letterGrid, rowNum, handleCellClick, setSelectedCell }) => {
+  cells = []
+  for (let colNum = 0; colNum < 5; colNum++) {
+    cells.push(
+      <Pressable key={colNum} onPress={() => handleCellClick(rowNum, colNum, setSelectedCell)}>
+        <Block letter={getCellLetter(rowNum, colNum, letterGrid)} />
+      </Pressable>
+    )
+  }
   return (
     <View style={styles.guessRow}>
-      <Block letter={letters[0]} />
-      <Block letter={letters[1]} />
-      <Block letter={letters[2]} />
-      <Block letter={letters[3]} />
-      <Block letter={letters[4]} />
+      {cells}
     </View>
   )
 }
 
-const getRows = (guesses, handleRowPress) => {
+const getRows = (letterGrid, handleCellClick, setSelectedCell) => {
   let rows = [];
   for (let i = 0; i < 6; i++) {
-    const guess = guesses[i];
     rows.push(
-      <Pressable key={i} onPress={() => handleRowPress(i)}>
-        <GuessRow key={i} guess={guess}/>
-      </Pressable> 
+      <Row key={i} letterGrid={letterGrid} rowNum = {i} handleCellClick={handleCellClick} setSelectedCell={setSelectedCell} />
     );
   }
   return rows;
 };
 
-const defaultGuess = {
-  0: "",
-  1: "",
-  2: "",
-  3: "",
-  4: "",
-  5: "",
-}
 
 const KeyboardRow = ({
   letters,
@@ -90,7 +90,7 @@ const Keyboard = ({ onKeyPress }) => {
   )
 }
 
-const handleEnter = (guess, rowIndex, activeWord) => {
+const handleEnter = (guess, rowIndex) => {
   if (guess.length !== 5) {
     alert("Word too short.")
     return
@@ -100,47 +100,31 @@ const handleEnter = (guess, rowIndex, activeWord) => {
     alert("Not a valid word.")
     return
   }
-
-  if (rowIndex < 5) {
-    setRowIndex(rowIndex + 1)
-  } else {
-    alert("You lose!")
-  }
 }
 
 export default function App() {
-  const [rowIndex, setRowIndex] = React.useState(0)
-  const [guesses, setGuesses] = React.useState(defaultGuess)
+  const [selectedCell, setSelectedCell] = React.useState([])
+  const [letterGrid, setLetterGrid] = React.useState({0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}})
 
   const handleKeyPress = (letter) => {
-    const guess = guesses[rowIndex]
-    if (letter === "ENTER") {
-      handleEnter(guess, activeWord)
-    }
-    
-    if (letter === "⌫") {
-      setGuesses({ ...guesses, [rowIndex]: guess.slice(0, -1) })
-      return
-    }
-
-    // don't add if guess is full
-    if (guess.length >= 5) {
-      return
-    }
-    setGuesses({ ...guesses, [rowIndex]: guess + letter })
+    newLetterGrid = letterGrid
+    newLetterGrid[selectedCell[0]][selectedCell[1]] = letter
+    setLetterGrid({ ...letterGrid, newLetterGrid })
   }
 
-  const handleRowPress = (rowNum) => {
-    console.log("Row " + rowNum + " pressed!")
-    setRowIndex(rowNum)
+  const handleCellClick = (row, col, setSelectedCell) => {
+    let cellNum = [row, col]
+    console.log(`"Row is: ${cellNum[1]} & Col is: ${cellNum[1]}"`)
+    setSelectedCell(cellNum)
   }
 
   return (
     <SafeAreaView style={styles.container}>
+      <Text>Bananagrams!!</Text>
       <View>
-        {getRows(guesses, handleRowPress)}
+        {getRows(letterGrid, handleCellClick, setSelectedCell)}
       </View>
-      <Text style={styles.notes}>Selected Row: {rowIndex}</Text>
+      <Text style={styles.notes}>(Row is: {selectedCell[0]} & Col is: {selectedCell[1]})</Text>
       <Keyboard onKeyPress={handleKeyPress} />
     </SafeAreaView>
   )
