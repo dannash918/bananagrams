@@ -1,0 +1,9 @@
+{
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "lang": "en",
+  "name": "bananagrams",
+  "short_name": "bananagrams",
+  "start_url": "/?utm_source=web_app_manifest",
+  "orientation": "portrait"
+}
