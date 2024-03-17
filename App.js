@@ -74,13 +74,21 @@ const KeyboardRow = ({
   </View>
 )
 
-const Keyboard = ({ onKeyPress }) => {
+const Keyboard = ({ onKeyPress, autoDirect }) => {
   const row1 = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"]
   const row2 = ["A", "S", "D", "F", "G", "H", "J", "K", "L"]
   const row3 = ["Z", "X", "C", "V", "B", "N", "M", "⌫"]
 
   return (
     <View style={styles.keyboard}>
+      <View style={styles.keyboardRow}>
+        <Text style={styles.directionText}>Direction: </Text>
+        <Pressable onPress={() => onKeyPress(autoDirect)}>
+          <View style={styles.key}>
+            <Text style={styles.keyLetter}> {autoDirect} </Text>
+          </View>
+        </Pressable>
+      </View>
       <KeyboardRow letters={row1} onKeyPress={onKeyPress} />
       <KeyboardRow letters={row2} onKeyPress={onKeyPress} />
       <KeyboardRow letters={row3} onKeyPress={onKeyPress} />
@@ -96,6 +104,7 @@ const Keyboard = ({ onKeyPress }) => {
 }
 
 const handleEnter = (guess, rowIndex) => {
+  // TODO make this work or remove?
   if (guess.length !== 5) {
     alert("Word too short.")
     return
@@ -107,18 +116,39 @@ const handleEnter = (guess, rowIndex) => {
   }
 }
 
+const handleDirectionPress = (autoDirect, setAutoDirect) => {
+  if (autoDirect == "→") {
+    setAutoDirect("↓")
+  } else {
+    setAutoDirect("→")
+  }
+}
+
 export default function App() {
   const [selectedCell, setSelectedCell] = React.useState([])
   const [letterGrid, setLetterGrid] = React.useState({0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}})
+  const [autoDirect, setAutoDirect] = React.useState("→")
 
   const handleKeyPress = (letter) => {
+    if (letter == "→" || letter =="↓") {
+      handleDirectionPress(autoDirect, setAutoDirect)
+      return
+    } 
     newLetterGrid = letterGrid
     newLetterGrid[selectedCell[0]][selectedCell[1]] = letter
     setLetterGrid({ ...letterGrid, newLetterGrid })
+    // Change selectedCell location
+    cellNum = selectedCell
+    if (autoDirect == "→") {
+      cellNum[1] = selectedCell[1] + 1
+    } else {
+      cellNum[0] = selectedCell[0] + 1
+    }
+    setSelectedCell(cellNum)
   }
 
   const handleCellClick = (row, col, setSelectedCell) => {
-    let cellNum = [row, col]
+    cellNum = [row, col]
     console.log(`"Row is: ${cellNum[1]} & Col is: ${cellNum[1]}"`)
     setSelectedCell(cellNum)
   }
@@ -130,7 +160,7 @@ export default function App() {
         {getRows(letterGrid, selectedCell, handleCellClick, setSelectedCell)}
       </View>
       <Text style={styles.notes}>(Row is: {selectedCell[0]} & Col is: {selectedCell[1]})</Text>
-      <Keyboard onKeyPress={handleKeyPress} />
+      <Keyboard onKeyPress={handleKeyPress} autoDirect={autoDirect}/>
     </SafeAreaView>
   )
 }
@@ -169,6 +199,11 @@ const styles = StyleSheet.create({
   },
   notes: {
     textAlign: "center",
+  },
+  directionText: {
+    // position: 'absolute', 
+    top: '20%',
+    // transform: 'translate(-50%, -50%)'
   },
   // keyboard
   keyboard: { flexDirection: "column" },
