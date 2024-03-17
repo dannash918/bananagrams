@@ -12,8 +12,8 @@ const isValidWord = (word) => {
   return true
 }
 
-const Block = ({letter}) => (
-  <View style={styles.guessSquare}>
+const Block = ({letter, isSelected}) => (
+  <View style={isSelected ? styles.selectedSquare : styles.guessSquare}>
     <Text style={styles.guessLetter}>{letter}</Text>
   </View>
 )
@@ -27,12 +27,17 @@ const getCellLetter = (rowNum, colNum, letterGrid) => {
   return ""
 }
 
-const Row = ({ letterGrid, rowNum, handleCellClick, setSelectedCell }) => {
+const Row = ({ letterGrid, rowNum, selectedCell, handleCellClick, setSelectedCell }) => {
   cells = []
   for (let colNum = 0; colNum < 5; colNum++) {
+    isSelected = false
+    if (selectedCell[0] == rowNum && selectedCell[1] == colNum) {
+      console.log (`"Col: ${colNum}, Row: ${rowNum} is selected"`)
+      isSelected = true
+    }
     cells.push(
       <Pressable key={colNum} onPress={() => handleCellClick(rowNum, colNum, setSelectedCell)}>
-        <Block letter={getCellLetter(rowNum, colNum, letterGrid)} />
+        <Block letter={getCellLetter(rowNum, colNum, letterGrid)} isSelected={isSelected}/>
       </Pressable>
     )
   }
@@ -43,11 +48,11 @@ const Row = ({ letterGrid, rowNum, handleCellClick, setSelectedCell }) => {
   )
 }
 
-const getRows = (letterGrid, handleCellClick, setSelectedCell) => {
+const getRows = (letterGrid, selectedCell, handleCellClick, setSelectedCell) => {
   let rows = [];
   for (let i = 0; i < 6; i++) {
     rows.push(
-      <Row key={i} letterGrid={letterGrid} rowNum = {i} handleCellClick={handleCellClick} setSelectedCell={setSelectedCell} />
+      <Row key={i} letterGrid={letterGrid} rowNum = {i} selectedCell = {selectedCell} handleCellClick={handleCellClick} setSelectedCell={setSelectedCell} />
     );
   }
   return rows;
@@ -120,9 +125,9 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* <Text style={styles.notes}>Bananagrams!!</Text> */}
+      <Text style={styles.notes}>Bananagrams!!</Text>
       <View>
-        {getRows(letterGrid, handleCellClick, setSelectedCell)}
+        {getRows(letterGrid, selectedCell, handleCellClick, setSelectedCell)}
       </View>
       <Text style={styles.notes}>(Row is: {selectedCell[0]} & Col is: {selectedCell[1]})</Text>
       <Keyboard onKeyPress={handleKeyPress} />
@@ -137,6 +142,15 @@ const styles = StyleSheet.create({
   },
   guessSquare: {
     borderColor: "#d3d6da",
+    borderWidth: 2,
+    width: 50,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 5,
+  },
+  selectedSquare: {
+    borderColor: "#78aef5",
     borderWidth: 2,
     width: 50,
     height: 50,
