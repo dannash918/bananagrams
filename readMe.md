@@ -11,11 +11,11 @@ https://docs.amplify.aws/react-native/start/getting-started/setup/
 npx expo start --web
 
 ### ToDo
- - [] Add Autoreload
- - [] Get set number of letters in keyboard (eg. 9 letters)
- - [] Add Peel button which gives extra 2-3 tiles
- - [] change selectedCell to auto move on key press
+ - [ ] Add Autoreload
+ - [ ] Get set number of letters in keyboard (eg. 9 letters)
+ - [ ] Add Peel button which gives extra 2-3 tiles
+ - [ ] change selectedCell to auto move on key press
  - [x] highlight selectedCell
- - [] move style sheet out to separate class
- - [] move keyboard to separate class
- - [] change grid logic to work with settings/grid size
+ - [ ] move style sheet out to separate class
+ - [ ] move keyboard to separate class
+ - [ ] change grid logic to work with settings/grid size
