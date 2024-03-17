@@ -19,3 +19,4 @@ npx expo start --web
  - [ ] move style sheet out to separate class
  - [ ] move keyboard to separate class
  - [ ] change grid logic to work with settings/grid size
+ - [ ] implement backspace key
