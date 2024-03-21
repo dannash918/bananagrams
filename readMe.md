@@ -14,8 +14,10 @@ npx expo start --web
  - [ ] Add Autoreload
  - [ ] Get set number of letters in keyboard (eg. 9 letters)
  - [ ] Add Peel button which gives extra 2-3 tiles
- - [ ] change selectedCell to auto move on key press
+ - [x] change selectedCell to auto move on key press
  - [x] highlight selectedCell
  - [ ] move style sheet out to separate class
  - [ ] move keyboard to separate class
  - [ ] change grid logic to work with settings/grid size
+ - [ ] change selectedCell to not move outside of grid
+ - [ ] clean up code

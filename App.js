@@ -74,7 +74,12 @@ const KeyboardRow = ({
   </View>
 )
 
+const getLetters = () => {
+  const letters = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G", "H", "J", "K", "L", "Z", "X", "C", "V", "B", "N", "M"]
+}
+
 const Keyboard = ({ onKeyPress, autoDirect }) => {
+  const letters = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"]
   const row1 = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"]
   const row2 = ["A", "S", "D", "F", "G", "H", "J", "K", "L"]
   const row3 = ["Z", "X", "C", "V", "B", "N", "M", "⌫"]
@@ -124,6 +129,52 @@ const handleDirectionPress = (autoDirect, setAutoDirect) => {
   }
 }
 
+const handleBackspacePress = (autoDirect, selectedCell, letterGrid, setLetterGrid, setSelectedCell) => {
+  // deletes letter in existing space
+  newLetterGrid = letterGrid
+  newLetterGrid[selectedCell[0]][selectedCell[1]] = ""
+  setLetterGrid({ ...letterGrid, newLetterGrid })
+  
+  cellNum = selectedCell
+  if (autoDirect == "→") {
+    console.log(`"Backspace: Row: ${cellNum[0]} & Col${cellNum[1]}"`)
+    if (cellNum[1] > 0) {
+      cellNum[1] = cellNum[1] - 1
+    }
+  } else {
+    if (cellNum[0] > 0) {
+      cellNum[0] = cellNum[0] - 1
+    }
+  }
+  console.log(`"Backspace: Setting Row: ${cellNum[0]} & Col${cellNum[1]}"`)
+  setSelectedCell(cellNum)
+  
+  // deletes letter in previous space
+  newLetterGrid = letterGrid
+  newLetterGrid[selectedCell[0]][selectedCell[1]] = ""
+  setLetterGrid({ ...letterGrid, newLetterGrid })
+}
+
+const handleLetterPress = (autoDirect, selectedCell, letter, letterGrid, setLetterGrid, setSelectedCell) => {
+  // todo this could be refactored/combined with backspace press somehow
+  newLetterGrid = letterGrid
+  newLetterGrid[selectedCell[0]][selectedCell[1]] = letter
+  setLetterGrid({ ...letterGrid, newLetterGrid })
+  
+  // Change selectedCell location
+  cellNum = selectedCell
+  if (autoDirect == "→") {
+    if (cellNum[1] < 4) {
+      cellNum[1] = selectedCell[1] + 1
+    }
+  } else {
+    if (cellNum[0] < 5) {
+      cellNum[0] = selectedCell[0] + 1
+    }
+  }
+  setSelectedCell(cellNum)
+}
+
 export default function App() {
   const [selectedCell, setSelectedCell] = React.useState([])
   const [letterGrid, setLetterGrid] = React.useState({0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}})
@@ -133,18 +184,16 @@ export default function App() {
     if (letter == "→" || letter =="↓") {
       handleDirectionPress(autoDirect, setAutoDirect)
       return
-    } 
-    newLetterGrid = letterGrid
-    newLetterGrid[selectedCell[0]][selectedCell[1]] = letter
-    setLetterGrid({ ...letterGrid, newLetterGrid })
-    // Change selectedCell location
-    cellNum = selectedCell
-    if (autoDirect == "→") {
-      cellNum[1] = selectedCell[1] + 1
-    } else {
-      cellNum[0] = selectedCell[0] + 1
     }
-    setSelectedCell(cellNum)
+    
+    if (letter == "⌫") {
+      handleBackspacePress(autoDirect, selectedCell, letterGrid, setLetterGrid, setSelectedCell)
+      //return
+    } else {
+      handleLetterPress(autoDirect, selectedCell, letter, letterGrid, setLetterGrid, setSelectedCell)
+    }
+    
+    
   }
 
   const handleCellClick = (row, col, setSelectedCell) => {
