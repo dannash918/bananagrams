@@ -74,16 +74,14 @@ const KeyboardRow = ({
   </View>
 )
 
-const getLetters = () => {
+const getLetters = (numLetters) => {
   const letters = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G", "H", "J", "K", "L", "Z", "X", "C", "V", "B", "N", "M"]
+  const shuffledLetters = letters.sort(() => 0.5 - Math.random())
+  selectedLetters = shuffledLetters.splice(0, numLetters)
+  return selectedLetters
 }
 
-const Keyboard = ({ onKeyPress, autoDirect }) => {
-  const letters = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"]
-  const row1 = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"]
-  const row2 = ["A", "S", "D", "F", "G", "H", "J", "K", "L"]
-  const row3 = ["Z", "X", "C", "V", "B", "N", "M", "⌫"]
-
+const Keyboard = ({ letters, onKeyPress, autoDirect }) => {
   return (
     <View style={styles.keyboard}>
       <View style={styles.keyboardRow}>
@@ -94,13 +92,16 @@ const Keyboard = ({ onKeyPress, autoDirect }) => {
           </View>
         </Pressable>
       </View>
-      <KeyboardRow letters={row1} onKeyPress={onKeyPress} />
-      <KeyboardRow letters={row2} onKeyPress={onKeyPress} />
-      <KeyboardRow letters={row3} onKeyPress={onKeyPress} />
+      <KeyboardRow letters={letters} onKeyPress={onKeyPress} />
       <View style={styles.keyboardRow}>
-        <Pressable onPress={() => onKeyPress("ENTER")}>
+        <Pressable onPress={() => onKeyPress("PEEL")}>
           <View style={styles.key}>
-            <Text style={styles.keyLetter}>ENTER</Text>
+            <Text style={styles.keyLetter}>PEEL</Text>
+          </View>
+        </Pressable>
+        <Pressable onPress={() => onKeyPress("⌫")}>
+          <View style={styles.key}>
+            <Text style={styles.keyLetter}>⌫</Text>
           </View>
         </Pressable>
       </View>
@@ -108,7 +109,7 @@ const Keyboard = ({ onKeyPress, autoDirect }) => {
   )
 }
 
-const handleEnter = (guess, rowIndex) => {
+const handlePeel = (guess, rowIndex) => {
   // TODO make this work or remove?
   if (guess.length !== 5) {
     alert("Word too short.")
@@ -129,7 +130,13 @@ const handleDirectionPress = (autoDirect, setAutoDirect) => {
   }
 }
 
-const handleBackspacePress = (autoDirect, selectedCell, letterGrid, setLetterGrid, setSelectedCell) => {
+const handleBackspacePress = (autoDirect, selectedCell, letterGrid, setLetterGrid, setSelectedCell, keyboardLetters, setKeyBoardLetters) => {
+  letter = letterGrid[selectedCell[0]][selectedCell[1]]
+  if (letter != undefined && letter != "") {
+    keyboardLetters.push(letter)
+    setKeyBoardLetters(keyboardLetters)
+  }
+
   // deletes letter in existing space
   newLetterGrid = letterGrid
   newLetterGrid[selectedCell[0]][selectedCell[1]] = ""
@@ -137,7 +144,6 @@ const handleBackspacePress = (autoDirect, selectedCell, letterGrid, setLetterGri
   
   cellNum = selectedCell
   if (autoDirect == "→") {
-    console.log(`"Backspace: Row: ${cellNum[0]} & Col${cellNum[1]}"`)
     if (cellNum[1] > 0) {
       cellNum[1] = cellNum[1] - 1
     }
@@ -146,16 +152,10 @@ const handleBackspacePress = (autoDirect, selectedCell, letterGrid, setLetterGri
       cellNum[0] = cellNum[0] - 1
     }
   }
-  console.log(`"Backspace: Setting Row: ${cellNum[0]} & Col${cellNum[1]}"`)
   setSelectedCell(cellNum)
-  
-  // deletes letter in previous space
-  newLetterGrid = letterGrid
-  newLetterGrid[selectedCell[0]][selectedCell[1]] = ""
-  setLetterGrid({ ...letterGrid, newLetterGrid })
 }
 
-const handleLetterPress = (autoDirect, selectedCell, letter, letterGrid, setLetterGrid, setSelectedCell) => {
+const handleLetterPress = (autoDirect, selectedCell, letter, letterGrid, setLetterGrid, setSelectedCell, keyboardLetters, setKeyBoardLetters) => {
   // todo this could be refactored/combined with backspace press somehow
   newLetterGrid = letterGrid
   newLetterGrid[selectedCell[0]][selectedCell[1]] = letter
@@ -173,24 +173,32 @@ const handleLetterPress = (autoDirect, selectedCell, letter, letterGrid, setLett
     }
   }
   setSelectedCell(cellNum)
+  newKeyboardLetters = keyboardLetters.filter(kl => kl !== letter)
+  setKeyBoardLetters(newKeyboardLetters)
 }
 
 export default function App() {
   const [selectedCell, setSelectedCell] = React.useState([])
   const [letterGrid, setLetterGrid] = React.useState({0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}})
   const [autoDirect, setAutoDirect] = React.useState("→")
+  const [keyboardLetters, setKeyBoardLetters] = React.useState(getLetters(9))
 
   const handleKeyPress = (letter) => {
     if (letter == "→" || letter =="↓") {
       handleDirectionPress(autoDirect, setAutoDirect)
       return
     }
-    
-    if (letter == "⌫") {
-      handleBackspacePress(autoDirect, selectedCell, letterGrid, setLetterGrid, setSelectedCell)
+    else if (letter == "⌫") {
+      handleBackspacePress(autoDirect, selectedCell, letterGrid, setLetterGrid, setSelectedCell, keyboardLetters, setKeyBoardLetters)
       //return
-    } else {
-      handleLetterPress(autoDirect, selectedCell, letter, letterGrid, setLetterGrid, setSelectedCell)
+    } else if (letter == "PEEL") {
+      if (keyboardLetters.length == 0) {
+        newLetters = getLetters(3)
+        setKeyBoardLetters(newLetters)
+      }
+    }
+    else {
+      handleLetterPress(autoDirect, selectedCell, letter, letterGrid, setLetterGrid, setSelectedCell, keyboardLetters, setKeyBoardLetters)
     }
     
     
@@ -209,7 +217,7 @@ export default function App() {
         {getRows(letterGrid, selectedCell, handleCellClick, setSelectedCell)}
       </View>
       <Text style={styles.notes}>(Row is: {selectedCell[0]} & Col is: {selectedCell[1]})</Text>
-      <Keyboard onKeyPress={handleKeyPress} autoDirect={autoDirect}/>
+      <Keyboard letters={keyboardLetters} onKeyPress={handleKeyPress} autoDirect={autoDirect}/>
     </SafeAreaView>
   )
 }
