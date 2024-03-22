@@ -168,6 +168,7 @@ const handleBackspacePress = (autoDirect, selectedCell, letterGrid, setLetterGri
 }
 
 const handleLetterPress = (autoDirect, selectedCell, letter, letterGrid, setLetterGrid, setSelectedCell, keyboardLetters, setKeyBoardLetters, idx) => {
+  existingLetter = letterGrid[selectedCell[0]][selectedCell[1]]
   // todo this could be refactored/combined with backspace press somehow
   newLetterGrid = letterGrid
   newLetterGrid[selectedCell[0]][selectedCell[1]] = letter
@@ -189,6 +190,7 @@ const handleLetterPress = (autoDirect, selectedCell, letter, letterGrid, setLett
   // remove letter from keyboard row
   // todo passing idx is a messy way of removing letters from keyboardRow, probably need to clean that up
   keyboardLetters.splice(idx, 1)
+  if (existingLetter) { keyboardLetters.push(existingLetter)}
   setKeyBoardLetters(keyboardLetters)
 }
 
