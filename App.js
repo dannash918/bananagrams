@@ -8,7 +8,8 @@ import {
 } from "react-native"
 
 const initLetterPool = () => {
-  const letters = [
+  // Full bananagrams tileset
+  const fullLetters = [
     "J","J","K","K","Q","Q","X","X","Z","Z","B","B","B","C","C","C","F","F","F","H","H","H",
     "M","M","M","P","P","P","V","V","V","W","W","W","Y","Y","Y","G","G","G","G","L","L","L",
     "L","L","D","D","D","D","D","D","S","S","S","S","S","S","U","U","U","U","U","U","N","N",
@@ -17,6 +18,18 @@ const initLetterPool = () => {
     "I","I","I","A","A","A","A","A","A","A","A","A","A","A","A","A","E","E","E","E","E","E",
     "E","E","E","E","E","E","E","E","E","E","E","E"
   ]
+
+  // smaller set for debugging
+  const letters = [
+    "J","K","Q","X","Z","B","B","C","C","F","F","H","H",
+    "M","M","P","P","V","V","W","W","Y","Y","G","G","L",
+    "L","L","D","D","D","S","S","S","U","U","U","N","N",
+    "N","N","T","T","T","T","R","R","R","R",
+    "O","O","O","O","O","O","I","I","I","I","I","I",
+    "A","A","A","A","A","A","A","E","E","E","E","E","E",
+    "E","E","E"
+  ]
+
   return letters
 }
 
@@ -223,6 +236,7 @@ export default function App() {
       <View>
         {getRows(letterGrid, selectedCell, handleCellClick, setSelectedCell)}
       </View>
+      <Text style={styles.notes}>Letters left: {letterPool.length}</Text>
       <Keyboard letters={keyboardLetters} onKeyPress={handleKeyPress} autoDirect={autoDirect}/>
     </SafeAreaView>
   )
