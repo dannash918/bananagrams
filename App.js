@@ -7,11 +7,6 @@ import {
   Pressable,
 } from "react-native"
 
-const isValidWord = (word) => {
-  // Todo hit a word validation api/library
-  return true
-}
-
 const initLetterPool = () => {
   const letters = [
     "J","J","K","K","Q","Q","X","X","Z","Z","B","B","B","C","C","C","F","F","F","H","H","H",
@@ -241,8 +236,8 @@ const styles = StyleSheet.create({
   guessSquare: {
     borderColor: "#d3d6da",
     borderWidth: 2,
-    width: 40,
-    height: 40,
+    width: 35,
+    height: 35,
     alignItems: "center",
     justifyContent: "center",
     margin: 2,
@@ -250,8 +245,8 @@ const styles = StyleSheet.create({
   selectedSquare: {
     borderColor: "#78aef5",
     borderWidth: 2,
-    width: 40,
-    height: 40,
+    width: 35,
+    height: 35,
     alignItems: "center",
     justifyContent: "center",
     margin: 2,
