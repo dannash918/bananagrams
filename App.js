@@ -85,11 +85,11 @@ const getRows = (letterGrid, selectedCell, handleCellClick, setSelectedCell) => 
 
 
 const KeyboardRow = ({
-  letters,
+  rowLetters,
   onKeyPress,
 }) => (
   <View style={styles.keyboardRow}>
-    {letters.map((letter, idx) => (
+    {rowLetters.map((letter, idx) => (
       <Pressable key={idx} onPress={() => onKeyPress(letter, idx)}>
         <View style={styles.key}>
           <Text style={styles.keyLetter}>{letter}</Text>
@@ -100,10 +100,8 @@ const KeyboardRow = ({
 )
 
 const getLetters = (numLetters, letterPool, setLetterPool) => {
-  console.log(`"LetterPool length: ${letterPool.length}"`)
   const shuffledLetters = letterPool.sort(() => 0.5 - Math.random())
   selectedLetters = shuffledLetters.splice(0, numLetters)
-  //setLetterPool(shuffledLetters)
   return selectedLetters
 }
 
@@ -121,9 +119,18 @@ const DirectionRow = ({onKeyPress, autoDirect}) => {
 }
 
 const Keyboard = ({ letters, onKeyPress }) => {
+  const kl = [...letters]
+  var keyRows = []
+  while (kl.length > 10) {
+    row = kl.splice(0, 9)
+    keyRows.push(row)
+  }
+  keyRows.push(kl)
+
   return (
     <View style={styles.keyboard}>
-      <KeyboardRow letters={letters} onKeyPress={onKeyPress} />
+      {keyRows.map((kr, idx) => (
+        <KeyboardRow key={idx} rowLetters={kr} onKeyPress={onKeyPress} />))}
       <View style={styles.keyboardRow}>
         <Pressable onPress={() => onKeyPress("PEEL")}>
           <View style={styles.key}>
@@ -141,10 +148,9 @@ const Keyboard = ({ letters, onKeyPress }) => {
 }
 
 const handlePeel = (keyboardLetters, setKeyBoardLetters, letterPool, setLetterPool) => {
-  //if (keyboardLetters.length == 0) {
   newLetters = getLetters(3, letterPool, setLetterPool)
-  setKeyBoardLetters(newLetters)
-  //}
+  allLetters = keyboardLetters.concat(newLetters)
+  setKeyBoardLetters(allLetters)
 }
 
 const handleDirectionPress = (autoDirect, setAutoDirect) => {
