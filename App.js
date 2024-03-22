@@ -107,17 +107,22 @@ const getLetters = (numLetters, letterPool, setLetterPool) => {
   return selectedLetters
 }
 
-const Keyboard = ({ letters, onKeyPress, autoDirect }) => {
+const DirectionRow = ({onKeyPress, autoDirect}) => {
+  return (
+    <View style={styles.keyboardRow}>
+      <Text style={styles.directionText}>Direction: </Text>
+      <Pressable onPress={() => onKeyPress(autoDirect)}>
+        <View style={styles.key}>
+          <Text style={styles.keyLetter}> {autoDirect} </Text>
+        </View>
+      </Pressable>
+    </View>
+  )
+}
+
+const Keyboard = ({ letters, onKeyPress }) => {
   return (
     <View style={styles.keyboard}>
-      <View style={styles.keyboardRow}>
-        <Text style={styles.directionText}>Direction: </Text>
-        <Pressable onPress={() => onKeyPress(autoDirect)}>
-          <View style={styles.key}>
-            <Text style={styles.keyLetter}> {autoDirect} </Text>
-          </View>
-        </Pressable>
-      </View>
       <KeyboardRow letters={letters} onKeyPress={onKeyPress} />
       <View style={styles.keyboardRow}>
         <Pressable onPress={() => onKeyPress("PEEL")}>
@@ -136,10 +141,10 @@ const Keyboard = ({ letters, onKeyPress, autoDirect }) => {
 }
 
 const handlePeel = (keyboardLetters, setKeyBoardLetters, letterPool, setLetterPool) => {
-  if (keyboardLetters.length == 0) {
-    newLetters = getLetters(3, letterPool, setLetterPool)
-    setKeyBoardLetters(newLetters)
-  }
+  //if (keyboardLetters.length == 0) {
+  newLetters = getLetters(3, letterPool, setLetterPool)
+  setKeyBoardLetters(newLetters)
+  //}
 }
 
 const handleDirectionPress = (autoDirect, setAutoDirect) => {
@@ -185,11 +190,11 @@ const handleLetterPress = (autoDirect, selectedCell, letter, letterGrid, setLett
   // Change selectedCell location
   cellNum = selectedCell
   if (autoDirect == "→") {
-    if (cellNum[1] < 4) {
+    if (cellNum[1] < 9) {
       cellNum[1] = selectedCell[1] + 1
     }
   } else {
-    if (cellNum[0] < 5) {
+    if (cellNum[0] < 9) {
       cellNum[0] = selectedCell[0] + 1
     }
   }
@@ -210,6 +215,7 @@ export default function App() {
   const [keyboardLetters, setKeyBoardLetters] = React.useState(() => getLetters(9, letterPool, setLetterPool))
 
   const handleKeyPress = (letter, idx) => {
+    // TODO remove this autoDirect into separate method
     if (letter == "→" || letter =="↓") {
       handleDirectionPress(autoDirect, setAutoDirect)
       return
@@ -237,6 +243,7 @@ export default function App() {
         {getRows(letterGrid, selectedCell, handleCellClick, setSelectedCell)}
       </View>
       <Text style={styles.notes}>Letters left: {letterPool.length}</Text>
+      <DirectionRow autoDirect={autoDirect} onKeyPress={handleKeyPress} />
       <Keyboard letters={keyboardLetters} onKeyPress={handleKeyPress} autoDirect={autoDirect}/>
     </SafeAreaView>
   )
