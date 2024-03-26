@@ -27,4 +27,7 @@ https://www.reactnativeschool.com/build-a-wordle-clone-with-react-native
 look into
 https://docs.aws.amazon.com/prescriptive-guidance/latest/patterns/build-a-serverless-react-native-mobile-app-by-using-aws-amplify.html
 
+partykit (socket hosting)
+socket.io
+
 
