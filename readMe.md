@@ -20,6 +20,9 @@ npx expo start --web
 ## Deployment:
 https://docs.amplify.aws/react-native/start/getting-started/setup/ 
 
+websickets using API gateway - looks easy
+https://www.freecodecamp.org/news/real-time-applications-using-websockets-with-aws-api-gateway-and-lambda-a5bb493e9452/
+
 ### Original Tutorial
 https://www.reactnativeschool.com/build-a-wordle-clone-with-react-native
 
