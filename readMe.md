@@ -36,6 +36,12 @@ socket.io
 sst.dev 
 ion.sst.dev
 
-## React Native Dnd
+### Drag Drop:
+https://github.com/iamitkhatkar/react-native-drag-drop-puzzle/blob/main/package.json
+https://www.youtube.com/watch?v=219Rv7qUEZw
+
+This youtube looks most promising
+
+### React Native Dnd
 https://github.com/mohebifar/react-native-easy-dnd
 
