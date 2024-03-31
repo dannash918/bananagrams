@@ -1,11 +1,17 @@
-import React from "react"
+import React, { useRef, useState } from "react"
 import {
   StyleSheet,
   View,
-  SafeAreaView,
-  Text,
-  Pressable,
+  // SafeAreaView,
+  Text
 } from "react-native"
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import Animated, {
+} from 'react-native-reanimated';
+import {
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler';
+import Draggable from './Draggable';
 
 const initLetterPool = () => {
   // Full bananagrams tileset
@@ -33,89 +39,31 @@ const initLetterPool = () => {
   return letters
 }
 
-const initLetterGrid = () => {
-  const letterGrid = {0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{}}
-  return letterGrid
-}
-
-const Block = ({letter, isSelected}) => (
-  <View style={isSelected ? styles.selectedSquare : styles.guessSquare}>
-    <Text style={styles.guessLetter}>{letter}</Text>
-  </View>
-)
-
-const getCellLetter = (rowNum, colNum, letterGrid) => {
-  if(letterGrid[rowNum] != null) {
-    if (letterGrid[rowNum][colNum] != null) {
-      return letterGrid[rowNum][colNum]
-    }
-  }
-  return ""
-}
-
-const Row = ({ letterGrid, rowNum, selectedCell, handleCellClick, setSelectedCell }) => {
-  cells = []
-  for (let colNum = 0; colNum < 10; colNum++) {
-    isSelected = false
-    if (selectedCell[0] == rowNum && selectedCell[1] == colNum) {
-      isSelected = true
-    }
-    cells.push(
-      <Pressable key={colNum} onPress={() => handleCellClick(rowNum, colNum, setSelectedCell)}>
-        <Block letter={getCellLetter(rowNum, colNum, letterGrid)} isSelected={isSelected}/>
-      </Pressable>
-    )
-  }
+const Tile = ({letter}) => {
   return (
-    <View style={styles.guessRow}>
-      {cells}
-    </View>
+    <Animated.View style={styles.key}>
+      <Text style={styles.keyLetter}>{letter}</Text>
+    </Animated.View>
   )
 }
 
-const getRows = (letterGrid, selectedCell, handleCellClick, setSelectedCell) => {
-  let rows = [];
-  for (let i = 0; i < 10; i++) {
-    rows.push(
-      <Row key={i} letterGrid={letterGrid} rowNum = {i} selectedCell = {selectedCell} handleCellClick={handleCellClick} setSelectedCell={setSelectedCell} />
-    );
-  }
-  return rows;
-};
-
-
-const KeyboardRow = ({
+const TileRow = ({
   rowLetters,
-  onKeyPress,
-}) => (
+}) => {
+  return (
   <View style={styles.keyboardRow}>
     {rowLetters.map((letter, idx) => (
-      <Pressable key={idx} onPress={() => onKeyPress(letter, idx)}>
-        <View style={styles.key}>
-          <Text style={styles.keyLetter}>{letter}</Text>
-        </View>
-      </Pressable>
+      <Draggable key={idx}>
+        <Tile key={idx} letter={letter} />
+      </Draggable>
     ))}
   </View>
-)
+)}
 
 const getLetters = (numLetters, letterPool, setLetterPool) => {
   const shuffledLetters = letterPool.sort(() => 0.5 - Math.random())
   selectedLetters = shuffledLetters.splice(0, numLetters)
   return selectedLetters
-}
-
-const DirectionRow = ({onKeyPress, autoDirect}) => {
-  return (
-    <View style={styles.keyboardRow}>
-      <Text style={styles.directionText}>Direction: </Text>
-      <Pressable onPress={() => onKeyPress(autoDirect)}>
-        <View style={styles.key}>
-          <Text style={styles.keyLetter}> {autoDirect} </Text>
-        </View>
-      </Pressable>
-    </View>
-  )
 }
 
 const Keyboard = ({ letters, onKeyPress }) => {
@@ -126,115 +74,22 @@ const Keyboard = ({ letters, onKeyPress }) => {
     keyRows.push(row)
   }
   keyRows.push(kl)
+  console.log(keyRows)
 
   return (
     <View style={styles.keyboard}>
       {keyRows.map((kr, idx) => (
-        <KeyboardRow key={idx} rowLetters={kr} onKeyPress={onKeyPress} />))}
-      <View style={styles.keyboardRow}>
-        <Pressable onPress={() => onKeyPress("PEEL")}>
-          <View style={styles.key}>
-            <Text style={styles.keyLetter}>PEEL</Text>
-          </View>
-        </Pressable>
-        <Pressable onPress={() => onKeyPress("⌫")}>
-          <View style={styles.key}>
-            <Text style={styles.keyLetter}>⌫</Text>
-          </View>
-        </Pressable>
-      </View>
+        <TileRow key={idx} rowLetters={kr} />))}
     </View>
   )
 }
 
-const handlePeel = (keyboardLetters, setKeyBoardLetters, letterPool, setLetterPool) => {
-  newLetters = getLetters(3, letterPool, setLetterPool)
-  allLetters = keyboardLetters.concat(newLetters)
-  setKeyBoardLetters(allLetters)
-}
-
-const handleDirectionPress = (autoDirect, setAutoDirect) => {
-  if (autoDirect == "→") {
-    setAutoDirect("↓")
-  } else {
-    setAutoDirect("→")
-  }
-}
-
-const handleBackspacePress = (autoDirect, selectedCell, letterGrid, setLetterGrid, setSelectedCell, keyboardLetters, setKeyBoardLetters) => {
-  letter = letterGrid[selectedCell[0]][selectedCell[1]]
-  if (letter != undefined && letter != "") {
-    keyboardLetters.push(letter)
-    setKeyBoardLetters(keyboardLetters)
-  }
-
-  // deletes letter in existing space
-  newLetterGrid = letterGrid
-  newLetterGrid[selectedCell[0]][selectedCell[1]] = ""
-  setLetterGrid({ ...letterGrid, newLetterGrid })
-  
-  cellNum = selectedCell
-  if (autoDirect == "→") {
-    if (cellNum[1] > 0) {
-      cellNum[1] = cellNum[1] - 1
-    }
-  } else {
-    if (cellNum[0] > 0) {
-      cellNum[0] = cellNum[0] - 1
-    }
-  }
-  setSelectedCell(cellNum)
-}
-
-const handleLetterPress = (autoDirect, selectedCell, letter, letterGrid, setLetterGrid, setSelectedCell, keyboardLetters, setKeyBoardLetters, idx) => {
-  existingLetter = letterGrid[selectedCell[0]][selectedCell[1]]
-  // todo this could be refactored/combined with backspace press somehow
-  newLetterGrid = letterGrid
-  newLetterGrid[selectedCell[0]][selectedCell[1]] = letter
-  setLetterGrid({ ...letterGrid, newLetterGrid })
-  
-  // Change selectedCell location
-  cellNum = selectedCell
-  if (autoDirect == "→") {
-    if (cellNum[1] < 9) {
-      cellNum[1] = selectedCell[1] + 1
-    }
-  } else {
-    if (cellNum[0] < 9) {
-      cellNum[0] = selectedCell[0] + 1
-    }
-  }
-  setSelectedCell(cellNum)
-
-  // remove letter from keyboard row
-  // todo passing idx is a messy way of removing letters from keyboardRow, probably need to clean that up
-  keyboardLetters.splice(idx, 1)
-  if (existingLetter) { keyboardLetters.push(existingLetter)}
-  setKeyBoardLetters(keyboardLetters)
-}
-
 export default function App() {
-  const [selectedCell, setSelectedCell] = React.useState([])
-  const [letterGrid, setLetterGrid] = React.useState(() => initLetterGrid())
-  const [autoDirect, setAutoDirect] = React.useState("→")
   const [letterPool, setLetterPool] = React.useState(() => initLetterPool())
-  const [keyboardLetters, setKeyBoardLetters] = React.useState(() => getLetters(9, letterPool, setLetterPool))
+  const [dragLetters, setDragLetters] = React.useState(() => getLetters(9, letterPool, setLetterPool))
 
   const handleKeyPress = (letter, idx) => {
-    // TODO remove this autoDirect into separate method
-    if (letter == "→" || letter =="↓") {
-      handleDirectionPress(autoDirect, setAutoDirect)
-      return
-    }
-    else if (letter == "⌫") {
-      handleBackspacePress(autoDirect, selectedCell, letterGrid, setLetterGrid, setSelectedCell, keyboardLetters, setKeyBoardLetters)
-      //return
-    } else if (letter == "PEEL") {
-      handlePeel(keyboardLetters, setKeyBoardLetters, letterPool, setLetterPool)
-    }
-    else {
-      handleLetterPress(autoDirect, selectedCell, letter, letterGrid, setLetterGrid, setSelectedCell, keyboardLetters, setKeyBoardLetters, idx)
-    }
+    handlePeel(dragLetters, setDragLetters, letterPool, setLetterPool)
   }
 
   const handleCellClick = (row, col, setSelectedCell) => {
@@ -243,60 +98,27 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.notes}>Bananagrams!!</Text>
-      <View>
-        {getRows(letterGrid, selectedCell, handleCellClick, setSelectedCell)}
-      </View>
-      <Text style={styles.notes}>Letters left: {letterPool.length}</Text>
-      <DirectionRow autoDirect={autoDirect} onKeyPress={handleKeyPress} />
-      <Keyboard letters={keyboardLetters} onKeyPress={handleKeyPress} autoDirect={autoDirect}/>
-    </SafeAreaView>
+    <SafeAreaProvider style={styles.container}>
+      <GestureHandlerRootView style={styles.container}>
+        <SafeAreaView style={styles.container}>
+          <Text style={styles.notes}>Draggable Bananagrams!!</Text>
+          <Keyboard letters={dragLetters} onKeyPress={handleKeyPress}/>
+          <Text style={styles.notes}>Letters left: {letterPool.length}</Text>
+        </SafeAreaView>
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
   )
 }
 
 const styles = StyleSheet.create({
-  guessRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  guessSquare: {
-    borderColor: "#d3d6da",
-    borderWidth: 2,
-    width: 35,
-    height: 35,
-    alignItems: "center",
-    justifyContent: "center",
-    margin: 2,
-  },
-  selectedSquare: {
-    borderColor: "#78aef5",
-    borderWidth: 2,
-    width: 35,
-    height: 35,
-    alignItems: "center",
-    justifyContent: "center",
-    margin: 2,
-  },
-  guessLetter: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#878a8c",
-  },
   container: {
-    justifyContent: "space-between",
     flex: 1,
+    justifyContent: "space-between",
   },
   notes: {
     marginTop: 20,
     textAlign: "center",
   },
-  directionText: {
-    // position: 'absolute', 
-    top: '20%',
-    // transform: 'translate(-50%, -50%)'
-  },
-  // keyboard
   keyboard: { flexDirection: "column" },
   keyboardRow: {
     flexDirection: "row",
