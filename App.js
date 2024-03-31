@@ -107,7 +107,9 @@ const styles = StyleSheet.create({
     marginTop: 20,
     textAlign: "center",
   },
-  keyboard: { flexDirection: "column" },
+  keyboard: { 
+    flexDirection: "column",
+  },
   keyboardRow: {
     flexDirection: "row",
     justifyContent: "center",
