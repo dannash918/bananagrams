@@ -39,7 +39,7 @@ const Draggable = ({children}) => {
         });
 
     return (
-        <Animated.View style={[styles.draggable, animatedStyles]}>
+        <Animated.View style={animatedStyles}>
             <GestureDetector gesture={pan} >
                 <Animated.View >{children}</Animated.View>
             </GestureDetector>
