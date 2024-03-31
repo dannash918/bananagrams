@@ -65,7 +65,7 @@ const getLetters = (numLetters, letterPool, setLetterPool) => {
   return selectedLetters
 }
 
-const Keyboard = ({ letters, onKeyPress }) => {
+const Keyboard = ({ letters }) => {
   const kl = [...letters]
   var keyRows = []
   while (kl.length > 10) {
@@ -91,7 +91,7 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <GestureHandlerRootView style={styles.container}>
         <Text style={styles.notes}>Draggable Bananagrams!!</Text>
-        <Keyboard letters={dragLetters} onKeyPress={handleKeyPress}/>
+        <Keyboard letters={dragLetters} />
         <Text style={styles.notes}>Letters left: {letterPool.length}</Text>
       </GestureHandlerRootView>
     </SafeAreaView>

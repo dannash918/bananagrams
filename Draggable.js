@@ -39,9 +39,9 @@ const Draggable = ({children}) => {
         });
 
     return (
-        <Animated.View>
-            <GestureDetector gesture={pan}>
-                <Animated.View style={[styles.draggable, animatedStyles]}>{children}</Animated.View>
+        <Animated.View style={[styles.draggable, animatedStyles]}>
+            <GestureDetector gesture={pan} style={styles.bottom}>
+                <Animated.View >{children}</Animated.View>
             </GestureDetector>
         </Animated.View>
     );
@@ -51,6 +51,10 @@ export default Draggable
 
 const styles = StyleSheet.create({
     draggable: {
-      color: "red"
+        zIndex: 0,
+        color: "red"
     },
+    bottom: {
+        zIndex: 0
+    }
   });
