@@ -3,7 +3,8 @@ import {
   StyleSheet,
   View,
   SafeAreaView,
-  Text
+  Text,
+  Pressable
 } from "react-native"
 import Animated, {
 } from 'react-native-reanimated';
@@ -78,21 +79,35 @@ const Keyboard = ({ letters }) => {
   return (
     <View style={styles.keyboard}>
       {keyRows.map((kr, idx) => (
-        <TileRow key={idx} rowLetters={kr} />))}
+        <TileRow style={styles.keyboardRow} key={idx} rowLetters={kr} />))}
     </View>
   )
 }
 
 export default function App() {
   const [letterPool, setLetterPool] = React.useState(() => initLetterPool())
-  const [dragLetters, setDragLetters] = React.useState(() => getLetters(9, letterPool, setLetterPool))
+  const [tileLetters, setTileLetters] = React.useState(() => getLetters(9, letterPool, setLetterPool))
+
+  const handlePeel = (letterPool, setLetterPool) => {
+    newLetters = getLetters(3, letterPool, setLetterPool)
+    allLetters = tileLetters.concat(newLetters)
+    setTileLetters(allLetters)
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-      <GestureHandlerRootView style={styles.container}>
-        <Text style={styles.notes}>Draggable Bananagrams!!</Text>
-        <Keyboard letters={dragLetters} />
-        <Text style={styles.notes}>Letters left: {letterPool.length}</Text>
+      <GestureHandlerRootView >
+        <Text style={styles.heading}>Bananagrams!!</Text>
+        <View style={styles.playArea} />
+        <View style={styles.letterArea} >
+          <Text style={styles.notes}>Letters left: {letterPool.length}</Text>
+          <Keyboard letters={tileLetters} />
+        </View>
+        <Pressable style={styles.peel} onPress={() => handlePeel(letterPool, setLetterPool)}>
+          <View style={styles.key}>
+            <Text style={styles.peelText} >PEEL</Text>
+          </View>
+        </Pressable>
       </GestureHandlerRootView>
     </SafeAreaView>
   )
@@ -100,11 +115,35 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%'
+  },
+  playArea: {
+    flex: 8,
+  },
+  letterArea: {
+    flex: 2,
+  },
+  heading: {
+    textAlign: "center",
     flex: 1,
-    justifyContent: "space-between",
   },
   notes: {
     marginTop: 20,
+    textAlign: "center",
+    flex: 1
+  },
+  heading: {
+    marginTop: 20,
+    textAlign: "center",
+    flex: 1
+  },
+  peel: {
+    flex: 1,
+  },
+  peelText: {
     textAlign: "center",
   },
   keyboard: { 
@@ -113,7 +152,8 @@ const styles = StyleSheet.create({
   keyboardRow: {
     flexDirection: "row",
     justifyContent: "center",
-    marginBottom: 10,
+    marginBottom: 40,
+    // position: 'absolute'
   },
   key: {
     backgroundColor: "#d3d6da",
