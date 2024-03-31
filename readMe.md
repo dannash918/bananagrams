@@ -20,7 +20,28 @@ npx expo start --web
 ## Deployment:
 https://docs.amplify.aws/react-native/start/getting-started/setup/ 
 
+websickets using API gateway - looks easy
+https://www.freecodecamp.org/news/real-time-applications-using-websockets-with-aws-api-gateway-and-lambda-a5bb493e9452/
+
 ### Original Tutorial
 https://www.reactnativeschool.com/build-a-wordle-clone-with-react-native
 
+### AWS Appsync
+look into
+https://docs.aws.amazon.com/prescriptive-guidance/latest/patterns/build-a-serverless-react-native-mobile-app-by-using-aws-amplify.html
+
+partykit (socket hosting)
+socket.io
+
+sst.dev 
+ion.sst.dev
+
+### Drag Drop:
+https://github.com/iamitkhatkar/react-native-drag-drop-puzzle/blob/main/package.json
+https://www.youtube.com/watch?v=219Rv7qUEZw
+
+This youtube looks most promising
+
+### React Native Dnd
+https://github.com/mohebifar/react-native-easy-dnd
 
