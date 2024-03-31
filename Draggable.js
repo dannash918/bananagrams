@@ -6,7 +6,6 @@ import {
   } from 'react-native-gesture-handler';
 import Animated from "react-native-reanimated";
 import {useSharedValue, useAnimatedStyle, withSpring} from 'react-native-reanimated';
-import {MARGIN} from './utils'
 
 const Draggable = ({children}) => {
     const xOffset = useSharedValue(0);

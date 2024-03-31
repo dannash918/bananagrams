@@ -2,10 +2,9 @@ import React, { useRef, useState } from "react"
 import {
   StyleSheet,
   View,
-  // SafeAreaView,
+  SafeAreaView,
   Text
 } from "react-native"
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import Animated, {
 } from 'react-native-reanimated';
 import {
@@ -88,25 +87,14 @@ export default function App() {
   const [letterPool, setLetterPool] = React.useState(() => initLetterPool())
   const [dragLetters, setDragLetters] = React.useState(() => getLetters(9, letterPool, setLetterPool))
 
-  const handleKeyPress = (letter, idx) => {
-    handlePeel(dragLetters, setDragLetters, letterPool, setLetterPool)
-  }
-
-  const handleCellClick = (row, col, setSelectedCell) => {
-    cellNum = [row, col]
-    setSelectedCell(cellNum)
-  }
-
   return (
-    <SafeAreaProvider style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <GestureHandlerRootView style={styles.container}>
-        <SafeAreaView style={styles.container}>
-          <Text style={styles.notes}>Draggable Bananagrams!!</Text>
-          <Keyboard letters={dragLetters} onKeyPress={handleKeyPress}/>
-          <Text style={styles.notes}>Letters left: {letterPool.length}</Text>
-        </SafeAreaView>
+        <Text style={styles.notes}>Draggable Bananagrams!!</Text>
+        <Keyboard letters={dragLetters} onKeyPress={handleKeyPress}/>
+        <Text style={styles.notes}>Letters left: {letterPool.length}</Text>
       </GestureHandlerRootView>
-    </SafeAreaProvider>
+    </SafeAreaView>
   )
 }
 
