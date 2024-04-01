@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react"
+import React from "react"
 import {
   StyleSheet,
   View,
@@ -11,33 +11,9 @@ import Animated, {
 import {
   GestureHandlerRootView,
 } from 'react-native-gesture-handler';
-import Draggable from './Draggable';
+import Draggable from './Components/Draggable';
+import {initLetterPool, getLetters } from './utils/LetterPool'
 
-const initLetterPool = () => {
-  // Full bananagrams tileset
-  const fullLetters = [
-    "J","J","K","K","Q","Q","X","X","Z","Z","B","B","B","C","C","C","F","F","F","H","H","H",
-    "M","M","M","P","P","P","V","V","V","W","W","W","Y","Y","Y","G","G","G","G","L","L","L",
-    "L","L","D","D","D","D","D","D","S","S","S","S","S","S","U","U","U","U","U","U","N","N",
-    "N","N","N","N","N","N","T","T","T","T","T","T","T","T","T","R","R","R","R","R","R","R",
-    "R","R","O","O","O","O","O","O","O","O","O","O","O","I","I","I","I","I","I","I","I","I",
-    "I","I","I","A","A","A","A","A","A","A","A","A","A","A","A","A","E","E","E","E","E","E",
-    "E","E","E","E","E","E","E","E","E","E","E","E"
-  ]
-
-  // smaller set for debugging
-  const letters = [
-    "J","K","Q","X","Z","B","B","C","C","F","F","H","H",
-    "M","M","P","P","V","V","W","W","Y","Y","G","G","L",
-    "L","L","D","D","D","S","S","S","U","U","U","N","N",
-    "N","N","T","T","T","T","R","R","R","R",
-    "O","O","O","O","O","O","I","I","I","I","I","I",
-    "A","A","A","A","A","A","A","E","E","E","E","E","E",
-    "E","E","E"
-  ]
-
-  return letters
-}
 
 const Tile = ({letter}) => {
   return (
@@ -47,11 +23,11 @@ const Tile = ({letter}) => {
   )
 }
 
-const TileRow = ({
+const DeckRow = ({
   rowLetters,
 }) => {
   return (
-  <View style={styles.keyboardRow}>
+  <View style={styles.DeckRow}>
     {rowLetters.map((letter, idx) => (
       <Draggable key={idx}>
         <Tile key={idx} letter={letter} />
@@ -60,13 +36,7 @@ const TileRow = ({
   </View>
 )}
 
-const getLetters = (numLetters, letterPool, setLetterPool) => {
-  const shuffledLetters = letterPool.sort(() => 0.5 - Math.random())
-  selectedLetters = shuffledLetters.splice(0, numLetters)
-  return selectedLetters
-}
-
-const Keyboard = ({ letters }) => {
+const Deck = ({ letters }) => {
   const kl = [...letters]
   var keyRows = []
   while (kl.length > 10) {
@@ -76,22 +46,28 @@ const Keyboard = ({ letters }) => {
   keyRows.push(kl)
   console.log(keyRows)
 
+  const removeLetterFromTiles = (idx) => {
+    const keyboardLetters = [...letters]
+    keyboardLetters.splice(idx, 1)
+    setDeckLetters(keyboardLetters)
+  }
+
   return (
     <View style={styles.keyboard}>
       {keyRows.map((kr, idx) => (
-        <TileRow style={styles.keyboardRow} key={idx} rowLetters={kr} />))}
+        <DeckRow style={styles.DeckRow} key={idx} rowLetters={kr} />))}
     </View>
   )
 }
 
 export default function App() {
   const [letterPool, setLetterPool] = React.useState(() => initLetterPool())
-  const [tileLetters, setTileLetters] = React.useState(() => getLetters(9, letterPool, setLetterPool))
+  const [deckLetters, setDeckLetters] = React.useState(() => getLetters(9, letterPool, setLetterPool))
 
   const handlePeel = (letterPool, setLetterPool) => {
     newLetters = getLetters(3, letterPool, setLetterPool)
-    allLetters = tileLetters.concat(newLetters)
-    setTileLetters(allLetters)
+    allLetters = deckLetters.concat(newLetters)
+    setDeckLetters(allLetters)
   }
 
   return (
@@ -101,7 +77,7 @@ export default function App() {
         <View style={styles.playArea} />
         <View style={styles.letterArea} >
           <Text style={styles.notes}>Letters left: {letterPool.length}</Text>
-          <Keyboard letters={tileLetters} />
+          <Deck letters={deckLetters} />
         </View>
         <Pressable style={styles.peel} onPress={() => handlePeel(letterPool, setLetterPool)}>
           <View style={styles.key}>
@@ -149,7 +125,7 @@ const styles = StyleSheet.create({
   keyboard: { 
     flexDirection: "column",
   },
-  keyboardRow: {
+  DeckRow: {
     flexDirection: "row",
     justifyContent: "center",
     marginBottom: 40,

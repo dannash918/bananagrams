@@ -1,5 +1,4 @@
 import React from "react";
-import { StyleSheet } from 'react-native';
 import {
     Gesture,
     GestureDetector,
@@ -12,7 +11,7 @@ const Draggable = ({children}) => {
     const yOffset = useSharedValue(0);
     const isActive = useSharedValue(false);
 
-    const pan = Gesture.Pan()
+    const drag = Gesture.Pan()
         .onBegin((event) => {
             isActive.value = true;
         })  
@@ -40,7 +39,7 @@ const Draggable = ({children}) => {
 
     return (
         <Animated.View style={animatedStyles}>
-            <GestureDetector gesture={pan} >
+            <GestureDetector gesture={drag} >
                 <Animated.View >{children}</Animated.View>
             </GestureDetector>
         </Animated.View>
