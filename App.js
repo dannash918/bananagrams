@@ -6,8 +6,7 @@ import {
   Text,
   Pressable
 } from "react-native"
-import Animated, {
-} from 'react-native-reanimated';
+import Animated, { useSharedValue } from 'react-native-reanimated';
 import {
   GestureHandlerRootView,
 } from 'react-native-gesture-handler';
@@ -23,46 +22,37 @@ const Tile = ({letter}) => {
   )
 }
 
-const DeckRow = ({
-  rowLetters,
-}) => {
+const Board = ({boardLetters, handleTileMove}) => {
+  return (
+    <View style={styles.DeckRow}>
+    {boardLetters.map((letter, letterIdx) => (
+      <Draggable key={letterIdx} handleTileMove={handleTileMove} letter={letter}>
+        <Tile key={letterIdx} letter={letter.letter} />
+      </Draggable>
+    ))}
+  </View>
+  )
+}
+
+const Deck = ({
+  deckLetters,
+  handleTileMove,
+}) => { 
+  console.log("Creating Deck")
   return (
   <View style={styles.DeckRow}>
-    {rowLetters.map((letter, idx) => (
-      <Draggable key={idx}>
-        <Tile key={idx} letter={letter} />
+    {deckLetters.map((letter, letterIdx) => (
+      <Draggable key={letterIdx} handleTileMove={handleTileMove} letter={letter}>
+        <Tile key={letterIdx} letter={letter.letter} />
       </Draggable>
     ))}
   </View>
 )}
 
-const Deck = ({ letters }) => {
-  const kl = [...letters]
-  var keyRows = []
-  while (kl.length > 10) {
-    row = kl.splice(0, 9)
-    keyRows.push(row)
-  }
-  keyRows.push(kl)
-  console.log(keyRows)
-
-  const removeLetterFromTiles = (idx) => {
-    const keyboardLetters = [...letters]
-    keyboardLetters.splice(idx, 1)
-    setDeckLetters(keyboardLetters)
-  }
-
-  return (
-    <View style={styles.keyboard}>
-      {keyRows.map((kr, idx) => (
-        <DeckRow style={styles.DeckRow} key={idx} rowLetters={kr} />))}
-    </View>
-  )
-}
-
 export default function App() {
   const [letterPool, setLetterPool] = React.useState(() => initLetterPool())
   const [deckLetters, setDeckLetters] = React.useState(() => getLetters(9, letterPool, setLetterPool))
+  const [boardLetters, setBoardLetters] = React.useState(() => getLetters(3, letterPool, setLetterPool))
 
   const handlePeel = (letterPool, setLetterPool) => {
     newLetters = getLetters(3, letterPool, setLetterPool)
@@ -70,14 +60,48 @@ export default function App() {
     setDeckLetters(allLetters)
   }
 
+  const handleTileMove = (letter) => {
+    console.log("Letter ID is: " + letter.id + " and Letter is " + letter.letter + " and onBoard is: " + letter.onBoard)
+    
+    if (letter.onBoard) {
+      const letterIdx = deckLetters.findIndex(l => l.id == letter.id)
+      if (letterIdx > -1) {
+        console.log("Switching letters!")
+        newdeckLetters = [...deckLetters]
+        newdeckLetters.splice(letterIdx, 1)
+        setDeckLetters(newdeckLetters)
+
+        newBoardLetters = [...boardLetters]
+        newBoardLetters.push(letter)
+        setBoardLetters(newBoardLetters)
+      }
+    } else {
+      const letterIdx = boardLetters.findIndex(l => l.id == letter.id)
+      if (letterIdx > -1) {
+        console.log("Switching letters!")
+        newBoardLetters = [...boardLetters]
+        newBoardLetters.splice(boardLetters, 1)
+        setBoardLetters(newBoardLetters)
+
+        newdeckLetters = [...deckLetters]
+        newdeckLetters.push(letter)
+        setDeckLetters(newdeckLetters)
+      }
+    }
+  }
+
+  console.log(deckLetters)
+  console.log(boardLetters)
+
   return (
     <SafeAreaView style={styles.container}>
       <GestureHandlerRootView >
         <Text style={styles.heading}>Bananagrams!!</Text>
         <View style={styles.playArea} />
+          <Board boardLetters={boardLetters} handleTileMove={handleTileMove}></Board>
         <View style={styles.letterArea} >
           <Text style={styles.notes}>Letters left: {letterPool.length}</Text>
-          <Deck letters={deckLetters} />
+          <Deck deckLetters={deckLetters} handleTileMove={handleTileMove} />
         </View>
         <Pressable style={styles.peel} onPress={() => handlePeel(letterPool, setLetterPool)}>
           <View style={styles.key}>

@@ -99,7 +99,7 @@ const KeyboardRow = ({
   </View>
 )
 
-const getLetters = (numLetters, letterPool, setLetterPool) => {
+const getLetters = (numLetters, letterPool) => {
   const shuffledLetters = letterPool.sort(() => 0.5 - Math.random())
   selectedLetters = shuffledLetters.splice(0, numLetters)
   return selectedLetters
@@ -147,8 +147,8 @@ const Keyboard = ({ letters, onKeyPress }) => {
   )
 }
 
-const handlePeel = (keyboardLetters, setKeyBoardLetters, letterPool, setLetterPool) => {
-  newLetters = getLetters(3, letterPool, setLetterPool)
+const handlePeel = (keyboardLetters, setKeyBoardLetters, letterPool) => {
+  newLetters = getLetters(3, letterPool)
   allLetters = keyboardLetters.concat(newLetters)
   setKeyBoardLetters(allLetters)
 }
@@ -230,7 +230,7 @@ export default function App() {
       handleBackspacePress(autoDirect, selectedCell, letterGrid, setLetterGrid, setSelectedCell, keyboardLetters, setKeyBoardLetters)
       //return
     } else if (letter == "PEEL") {
-      handlePeel(keyboardLetters, setKeyBoardLetters, letterPool, setLetterPool)
+      handlePeel(keyboardLetters, setKeyBoardLetters, letterPool)
     }
     else {
       handleLetterPress(autoDirect, selectedCell, letter, letterGrid, setLetterGrid, setSelectedCell, keyboardLetters, setKeyBoardLetters, idx)

@@ -4,9 +4,11 @@ import {
     GestureDetector,
   } from 'react-native-gesture-handler';
 import Animated from "react-native-reanimated";
-import {useSharedValue, useAnimatedStyle, withSpring} from 'react-native-reanimated';
+import { useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
 
-const Draggable = ({children}) => {
+const Draggable = ({children, handleTileMove, letter}) => { 
+    // console.log("Position is: " + letter.pos)
+    
     const xOffset = useSharedValue(0);
     const yOffset = useSharedValue(0);
     const isActive = useSharedValue(false);
@@ -21,6 +23,15 @@ const Draggable = ({children}) => {
         })
         .onFinalize((event) => {
             isActive.value = false;
+            xOffset.value += -1 * xOffset.value;
+            yOffset.value += -1 * yOffset.value;
+            if (event.absoluteY < 700) {
+                letter.onBoard = true
+            }
+            else (
+                letter.onBoard = false
+            )
+            handleTileMove(letter)
         });
 
         const animatedStyles = useAnimatedStyle(() => {
