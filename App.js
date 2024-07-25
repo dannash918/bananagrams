@@ -1,10 +1,12 @@
-import React from "react"
+import React, { useEffect, useRef } from 'react';
 import {
   StyleSheet,
   View,
+  ScrollView,
   SafeAreaView,
   Text,
   Pressable,
+  Dimensions
 } from "react-native"
 
 const initLetterPool = () => {
@@ -34,7 +36,10 @@ const initLetterPool = () => {
 }
 
 const initLetterGrid = () => {
-  const letterGrid = {0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{}}
+  const letterGrid = {0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{},
+  10:{}, 11:{}, 12:{}, 13:{}, 14:{}, 15:{}, 16:{}, 17:{}, 18:{}, 19:{},
+  20:{}, 21:{}, 22:{}, 23:{}, 24:{}, 25:{}, 26:{}, 27:{}, 28:{}, 29:{},
+  30:{}, 31:{}, 32:{}, 33:{}, 34:{}, 35:{}, 36:{}, 37:{}, 38:{}, 39:{},}
   return letterGrid
 }
 
@@ -55,7 +60,7 @@ const getCellLetter = (rowNum, colNum, letterGrid) => {
 
 const Row = ({ letterGrid, rowNum, selectedCell, handleCellClick, setSelectedCell }) => {
   cells = []
-  for (let colNum = 0; colNum < 10; colNum++) {
+  for (let colNum = 0; colNum < 40; colNum++) {
     isSelected = false
     if (selectedCell[0] == rowNum && selectedCell[1] == colNum) {
       isSelected = true
@@ -75,7 +80,7 @@ const Row = ({ letterGrid, rowNum, selectedCell, handleCellClick, setSelectedCel
 
 const getRows = (letterGrid, selectedCell, handleCellClick, setSelectedCell) => {
   let rows = [];
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 40; i++) {
     rows.push(
       <Row key={i} letterGrid={letterGrid} rowNum = {i} selectedCell = {selectedCell} handleCellClick={handleCellClick} setSelectedCell={setSelectedCell} />
     );
@@ -196,11 +201,11 @@ const handleLetterPress = (autoDirect, selectedCell, letter, letterGrid, setLett
   // Change selectedCell location
   cellNum = selectedCell
   if (autoDirect == "→") {
-    if (cellNum[1] < 9) {
+    if (cellNum[1] < 39) {
       cellNum[1] = selectedCell[1] + 1
     }
   } else {
-    if (cellNum[0] < 9) {
+    if (cellNum[0] < 39) {
       cellNum[0] = selectedCell[0] + 1
     }
   }
@@ -219,6 +224,21 @@ export default function App() {
   const [autoDirect, setAutoDirect] = React.useState("→")
   const [letterPool, setLetterPool] = React.useState(() => initLetterPool())
   const [keyboardLetters, setKeyBoardLetters] = React.useState(() => getLetters(9, letterPool, setLetterPool))
+  const scrollViewRef = useRef(null);
+
+  useEffect(() => {
+    // Calculate the height of the ScrollView
+    const { height } = Dimensions.get('window');
+    const scrollViewHeight = scrollViewRef.current?.scrollHeight;
+    const scrollViewWidth = scrollViewRef.current?.width;
+
+    // Scroll to the middle of the content
+    scrollViewRef.current?.scrollTo({
+      y: scrollViewHeight / 2 - height / 4,
+      x: scrollViewHeight / 4 - height / 8,
+      animated: false,
+    });
+  }, []);
 
   const handleKeyPress = (letter, idx) => {
     // TODO remove this autoDirect into separate method
@@ -245,9 +265,9 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.notes}>Bananagrams!!</Text>
-      <View>
+      <ScrollView ref={scrollViewRef} style={styles.scrollView}>
         {getRows(letterGrid, selectedCell, handleCellClick, setSelectedCell)}
-      </View>
+      </ScrollView>
       <Text style={styles.notes}>Letters left: {letterPool.length}</Text>
       <DirectionRow autoDirect={autoDirect} onKeyPress={handleKeyPress} />
       <Keyboard letters={keyboardLetters} onKeyPress={handleKeyPress} autoDirect={autoDirect}/>
@@ -268,6 +288,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     margin: 2,
+  },
+  scrollView: {
+    flexDirection: "column",
+    overflowX: "auto",
+    overflowY: "auto",
+    flexGrow: 1,
+    contentOffset: {x: 200, y: 200},
+    paddingLeft: 10,
+    marginLeft: 15,
+    marginRight: 15,
+    marginTop: 30,
+    marginBottom: 250,
+    //height: 1500,
+    // height: 2000
   },
   selectedSquare: {
     borderColor: "#78aef5",
