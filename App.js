@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
     marginTop: 30,
-    marginBottom: 250,
+    marginBottom: 100,
     //height: 1500,
     // height: 2000
   },
