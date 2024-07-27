@@ -36,7 +36,7 @@ const initLetterPool = () => {
 }
 
 const initLetterGrid = () => {
-  const letterGrid = {0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{},
+  const letterGrid = {0:{0: "G",1: "z",2: "x"}, 1:{0: "H"}, 2:{0: "I"}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{},
   10:{}, 11:{}, 12:{}, 13:{}, 14:{}, 15:{}, 16:{}, 17:{}, 18:{}, 19:{},
   20:{}, 21:{}, 22:{}, 23:{}, 24:{}, 25:{}, 26:{}, 27:{}, 28:{}, 29:{},
   30:{}, 31:{}, 32:{}, 33:{}, 34:{}, 35:{}, 36:{}, 37:{}, 38:{}, 39:{},}
@@ -209,33 +209,34 @@ const handleLetterPress = (autoDirect, selectedCell, letter, letterGrid, setLett
       cellNum[0] = selectedCell[0] + 1
     }
   }
-  setSelectedCell(cellNum)
+  
 
   // remove letter from keyboard row
   // todo passing idx is a messy way of removing letters from keyboardRow, probably need to clean that up
   keyboardLetters.splice(idx, 1)
   if (existingLetter) { keyboardLetters.push(existingLetter)}
   setKeyBoardLetters(keyboardLetters)
+  setSelectedCell(cellNum)
 }
 
 export default function App() {
-  const [selectedCell, setSelectedCell] = React.useState([])
+  const [selectedCell, setSelectedCell] = React.useState([20, 20])
   const [letterGrid, setLetterGrid] = React.useState(() => initLetterGrid())
   const [autoDirect, setAutoDirect] = React.useState("→")
   const [letterPool, setLetterPool] = React.useState(() => initLetterPool())
   const [keyboardLetters, setKeyBoardLetters] = React.useState(() => getLetters(9, letterPool, setLetterPool))
   const scrollViewRef = useRef(null);
+  scrollViewRef.current?.scrollTo({
+    y: selectedCell[0] * 35 - 70,
+    x: selectedCell[1] * 35 - 70,
+    animated: false,
+  });
 
   useEffect(() => {
-    // Calculate the height of the ScrollView
-    const { height } = Dimensions.get('window');
-    const scrollViewHeight = scrollViewRef.current?.scrollHeight;
-    const scrollViewWidth = scrollViewRef.current?.width;
-
     // Scroll to the middle of the content
     scrollViewRef.current?.scrollTo({
-      y: scrollViewHeight / 2 - height / 4,
-      x: scrollViewHeight / 4 - height / 8,
+      y: selectedCell[0] * 35 - 70,
+      x: selectedCell[1] * 35 - 70,
       animated: false,
     });
   }, []);
@@ -265,7 +266,7 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.notes}>Bananagrams!!</Text>
-      <ScrollView ref={scrollViewRef} style={styles.scrollView}>
+      <ScrollView ref={scrollViewRef} contentContainerStyle={{ width: '175%' }} style={styles.scrollView}>
         {getRows(letterGrid, selectedCell, handleCellClick, setSelectedCell)}
       </ScrollView>
       <Text style={styles.notes}>Letters left: {letterPool.length}</Text>
@@ -290,18 +291,11 @@ const styles = StyleSheet.create({
     margin: 2,
   },
   scrollView: {
-    flexDirection: "column",
     overflowX: "auto",
-    overflowY: "auto",
-    flexGrow: 1,
-    contentOffset: {x: 200, y: 200},
-    paddingLeft: 10,
-    marginLeft: 15,
-    marginRight: 15,
+    alignSelf: "center",
+    marginLeft: 0,
     marginTop: 30,
     marginBottom: 100,
-    //height: 1500,
-    // height: 2000
   },
   selectedSquare: {
     borderColor: "#78aef5",
@@ -326,9 +320,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   directionText: {
-    // position: 'absolute', 
     top: '20%',
-    // transform: 'translate(-50%, -50%)'
   },
   // keyboard
   keyboard: { flexDirection: "column" },
